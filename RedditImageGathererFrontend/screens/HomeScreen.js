@@ -3,16 +3,60 @@ import React from 'react';
 import {
   Image,
   Platform,
+  AsyncStorage,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
+import { Button } from 'react-native-elements';
+import { incrementTest } from '../redux/actions/TestAction';
+import { logoutUser } from '../redux/actions/CurrentLoggedInUser';
+import {connect} from 'react-redux';
+import ImageContainer from '../containers/ImageContainer';
+
+
+const mapDispatchToProps = {
+  incrementTest,
+  logoutUser
+}
+const mapStateToProps = (state) => {
+  console.log("State: ",state)
+  return ({
+    increment: state.first.increment,
+    id: state.second.id,
+    subreddit: state.second.subreddit
+  })
+}
 
 import { MonoText } from '../components/StyledText';
 
-export default function HomeScreen() {
+const HomeScreen = ( props )=> {
+  let signout = () => {
+      let url = 'http://localhost:3000/logout';
+      let options = {
+        method: "DELETE",
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'Access-Control-Allow-Origin':'http://localhost:3000'
+        }
+      };
+
+      fetch(url, options)
+      .then(res=>res.json())
+      .then(json=>{
+        props.logoutUser();
+        _signOutAsync();
+      })
+      .catch(error=>Alert.alert("Some error",error, [{title:'ok'}]))
+  }
+  let _signOutAsync = async () => {
+    await AsyncStorage.clear();
+    props.navigation.navigate('Auth');
+  };
   return (
     <View style={styles.container}>
       <ScrollView
@@ -42,28 +86,20 @@ export default function HomeScreen() {
           <Text style={styles.getStartedText}>
             Change this text and your app will automatically reload.
           </Text>
+            <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
+          <Button title="Actually, sign me out :)" onPress={signout} />
+
         </View>
 
         <View style={styles.helpContainer}>
-          <TouchableOpacity onPress={handleHelpPress} style={styles.helpLink}>
-            <Text style={styles.helpLinkText}>
-              Help, it didn’t automatically reload!
-            </Text>
-          </TouchableOpacity>
+          <ImageContainer subreddit={props.subreddit}/>
         </View>
       </ScrollView>
 
       <View style={styles.tabBarInfoContainer}>
         <Text style={styles.tabBarInfoText}>
-          This is a tab bar. You can edit it in:
+          {`Currently browsing: R/${props.subreddit}`}
         </Text>
-
-        <View
-          style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-          <MonoText style={styles.codeHighlightText}>
-            navigation/MainTabNavigator.js
-          </MonoText>
-        </View>
       </View>
     </View>
   );
@@ -94,6 +130,7 @@ function DevelopmentModeNotice() {
       </Text>
     );
   }
+
 }
 
 function handleLearnMorePress() {
@@ -196,3 +233,5 @@ const styles = StyleSheet.create({
     color: '#2e78b7',
   },
 });
+// export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(HomeScreen);
