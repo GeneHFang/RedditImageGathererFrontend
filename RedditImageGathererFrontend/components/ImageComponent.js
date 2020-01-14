@@ -18,17 +18,23 @@ const ImageComponent = (props) => {
 
     if (props.fileType){
         return (
-        <View style={{width:'25%', flex:1, alignSelf:'stretch'}}>
-            <TouchableOpacity onPress={() => props.toggle(null, false)}>
-                <Image resizeMode='contain' style={{width: props.dimensions, height: props.dimensions }} source={{uri:props.url}} /> 
-            </TouchableOpacity>
-        </View>
+            <GestureRecognizer 
+                onSwipeUp={() => props.toggle(null, false)}
+                onSwipeRight={() => props.nextOrPrev(-1)}
+                onSwipeLeft={() => props.nextOrPrev(1)}
+                onSwipeDown={() => props.saveImageURL(props.url,props.fileType)}
+            >
+                <View style={{width:'25%', flex:1, alignSelf:'stretch'}}>
+                    <Image resizeMode='contain' style={{width: props.dimensions, height: props.dimensions }} source={{uri:props.url}} /> 
+                
+                </View>
+            </GestureRecognizer>
         )
     }
     else{// console.log(props.url)
     return(
         <View style={{width: '25%'}}>
-            <TouchableOpacity onPress={() => props.toggle(props.fullImg, true)}>
+            <TouchableOpacity onPress={() => props.toggle(props.fullImg, true, props.index)}>
                 <Image style={{width: props.dimensions, height: props.dimensions }} source={{uri:props.url}} /> 
             </TouchableOpacity>
         </View>

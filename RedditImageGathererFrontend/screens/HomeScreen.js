@@ -1,5 +1,5 @@
 import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Image,
   Platform,
@@ -13,14 +13,15 @@ import {
 } from 'react-native';
 import { Button } from 'react-native-elements';
 import { incrementTest } from '../redux/actions/TestAction';
-import { logoutUser } from '../redux/actions/CurrentLoggedInUser';
+import { logoutUser, assignUser } from '../redux/actions/CurrentLoggedInUser';
 import {connect} from 'react-redux';
 import ImageContainer from '../containers/ImageContainer';
 
 
 const mapDispatchToProps = {
   incrementTest,
-  logoutUser
+  logoutUser,
+  assignUser
 }
 const mapStateToProps = (state) => {
   console.log("State: ",state)
@@ -34,6 +35,17 @@ const mapStateToProps = (state) => {
 import { MonoText } from '../components/StyledText';
 
 const HomeScreen = ( props )=> {
+
+  const [scrollable, toggleScroll] = useState(true);
+  const [id, setID] = useState(-1);
+
+  useEffect(() => {
+    if (props.id === -1) { 
+      getAsynchStuff();
+      assignUser(id);
+    }
+  }, [])
+
   let signout = () => {
       let url = 'http://localhost:3000/logout';
       let options = {
@@ -54,8 +66,9 @@ const HomeScreen = ( props )=> {
       .catch(error=>Alert.alert("Some error",error, [{title:'ok'}]))
   }
   let getAsynchStuff = async () => {
-    let x = await AsyncStorage.getItem('userToken');
+    let x = parseInt(await AsyncStorage.getItem('userToken'));
     console.log(x);
+    setID(x);
   }
   let _signOutAsync = async () => {
     await AsyncStorage.clear();
@@ -65,7 +78,8 @@ const HomeScreen = ( props )=> {
     <View style={styles.container}>
       <ScrollView
         style={styles.container}
-        contentContainerStyle={styles.contentContainer}>
+        contentContainerStyle={styles.contentContainer}
+        scrollEnabled={scrollable}>
         <View style={styles.welcomeContainer}>
           <Image
             source={
@@ -78,7 +92,7 @@ const HomeScreen = ( props )=> {
         </View>
 
         <View style={styles.getStartedContainer}>
-          <DevelopmentModeNotice />
+          {/* <DevelopmentModeNotice /> */}
 
             <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
             <Button title={`getAsyncTest`} onPress={getAsynchStuff}/> 
@@ -87,7 +101,11 @@ const HomeScreen = ( props )=> {
         </View>
 
         <View style={styles.helpContainer}>
-          <ImageContainer subreddit={props.subreddit}/>
+          <ImageContainer 
+            subreddit={props.subreddit}
+            toggleScroll={toggleScroll}
+            userID={id}  
+            />
         </View>
       </ScrollView>
 
