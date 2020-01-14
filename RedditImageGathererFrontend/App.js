@@ -25,7 +25,7 @@ const App = (props)=> {
       <Provider store={store}>
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-          <AppNavigator />
+          <AppNavigator testvalue={1}/>
         </View>
       </Provider>
     );

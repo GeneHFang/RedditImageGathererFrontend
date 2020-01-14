@@ -30,7 +30,10 @@ const msp = (state) => {
 
  class SignInScreen extends React.Component {
 
+    componentDidMount = ()=>{
+        console.log(this.props.id);
 
+    }
     static navigationOptions = {
       title: 'Please sign in',
     };
@@ -41,7 +44,9 @@ const msp = (state) => {
     }
 
     _signInAsync = async () => {
-        await AsyncStorage.setItem('userToken', 'abc');
+        //setItem can only take strings
+        let x = this.props.id + "";
+        await AsyncStorage.setItem('userToken', x);
         this.props.navigation.navigate('App');
       };
 

@@ -53,6 +53,10 @@ const HomeScreen = ( props )=> {
       })
       .catch(error=>Alert.alert("Some error",error, [{title:'ok'}]))
   }
+  let getAsynchStuff = async () => {
+    let x = await AsyncStorage.getItem('userToken');
+    console.log(x);
+  }
   let _signOutAsync = async () => {
     await AsyncStorage.clear();
     props.navigation.navigate('Auth');
@@ -76,17 +80,8 @@ const HomeScreen = ( props )=> {
         <View style={styles.getStartedContainer}>
           <DevelopmentModeNotice />
 
-          <Text style={styles.getStartedText}>Get started by opening</Text>
-
-          <View
-            style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-            <MonoText>screens/HomeScreen.js</MonoText>
-          </View>
-
-          <Text style={styles.getStartedText}>
-            Change this text and your app will automatically reload.
-          </Text>
             <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
+            <Button title={`getAsyncTest`} onPress={getAsynchStuff}/> 
           <Button title="Actually, sign me out :)" onPress={signout} />
 
         </View>
