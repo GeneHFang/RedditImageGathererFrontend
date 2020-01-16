@@ -23,8 +23,14 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "android": {
+
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryAddUsageDescription": "Give RedditImageGatherer permission to save photos?"
+      }
     }
   }
 }

@@ -31,7 +31,7 @@ const msp = (state) => {
  class SignInScreen extends React.Component {
 
     componentDidMount = ()=>{
-        console.log(this.props.id);
+        console.log("This is the ID:",this.props.id);
 
     }
     static navigationOptions = {
@@ -55,7 +55,7 @@ const msp = (state) => {
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            'Access-Control-Allow-Origin':'http://localhost:3000'
+            'Access-Control-Allow-Origin':'http://d8b23e11.ngrok.io'
         },
         body: JSON.stringify({"user":{
             name: name,
@@ -64,7 +64,7 @@ const msp = (state) => {
     }
 
     submitHandler = (values) => { 
-        let url = 'http://localhost:3000/sessions';
+        let url = 'http://d8b23e11.ngrok.io/sessions';
         let options = this.postOptions(values.username, values.password);
 
         fetch(url, options)

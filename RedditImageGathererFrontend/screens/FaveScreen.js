@@ -37,7 +37,7 @@ const FaveScreen = (props) => {
 
     useEffect(
         ()=> {
-            setURL(`http://localhost:3000/api/v1/users/${props.id}`);
+            setURL(`http://d8b23e11.ngrok.io/api/v1/users/${props.id}`);
         },
         [props]
     )
@@ -46,7 +46,7 @@ const FaveScreen = (props) => {
     return (
         <View>
             {/* <Button title="getUser ID" onPress={console.log(props)}/> */}
-            <Text style={{alignSelf:'center'}}>{`Your Favorites:`}</Text>
+            <Text style={{alignSelf:'center', padding:5}}>{`Your Favorites:`}</Text>
             <FavoritesContainer 
                 images={arr}
             />

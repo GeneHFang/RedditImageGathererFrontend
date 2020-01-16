@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import { 
     View, 
     Text,
@@ -7,6 +7,7 @@ import {
 import ImageComponent from '../components/ImageComponent';
 import { navSubreddit } from '../redux/actions/CurrentLoggedInUser';
 import FavoriteMenuComponent from '../components/FavoriteMenuComponent';
+import { TouchableHighlight } from 'react-native-gesture-handler';
 
 const FavoritesContainer = (props) => {
 
@@ -38,13 +39,13 @@ const FavoritesContainer = (props) => {
 
     let deleteImage = (id) => {
         // console.log("testingProps: ",props.userID);
-        let url = `http://localhost:3000/api/v1/images/${id}`;
+        let url = `http://d8b23e11.ngrok.io/api/v1/images/${id}`;
         let options = {
             method: "DELETE",
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Access-Control-Allow-Origin':'http://localhost:3000'
+                'Access-Control-Allow-Origin':'http://d8b23e11.ngrok.io'
             }
             }
 
@@ -110,6 +111,7 @@ const FavoritesContainer = (props) => {
         }
         else{
         return (
+            <Fragment>
             <ImageComponent 
                 url={props.images[currentIndex].url}
                 dimensions={400}
@@ -118,6 +120,7 @@ const FavoritesContainer = (props) => {
                 fileType={true}
                 showMenu={showMenu}
             />
+            </Fragment>
         )
         }
     }

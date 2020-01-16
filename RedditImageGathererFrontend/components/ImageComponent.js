@@ -7,11 +7,12 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
+    TouchableHighlight,
     View,
     Alert,
   } from 'react-native';
 
-import { Button } from 'react-native-elements';
+import { Button, ThemeProvider} from 'react-native-elements';
 import GestureRecognizer from 'react-native-swipe-gestures';
 
 const ImageComponent = (props) => {
@@ -26,12 +27,17 @@ const ImageComponent = (props) => {
                 onSwipeLeft={() => props.nextOrPrev(1)}
                 
             >
-                <TouchableOpacity onLongPress={() => props.showMenu(true)} >
+            <ThemeProvider theme={{colors:{primary:'#FFF'}}}>
+                <TouchableHighlight >
                 <View style={{width:'25%', flex:1, alignSelf:'stretch'}}>
+                {/* <Text>Hello!</Text> */}
                     <Image resizeMode='contain' style={{width: props.dimensions, height: props.dimensions }} source={{uri:props.url}} /> 
                 
                 </View>
-                </TouchableOpacity>
+                {/* <Button title="Pressable?"/> */}
+                </TouchableHighlight>
+          <Button  onLongPress={() => props.showMenu(true)} style={{height:500}}/>
+          </ThemeProvider>
             </GestureRecognizer>
         )
     }

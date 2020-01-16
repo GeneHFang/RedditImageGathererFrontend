@@ -42,8 +42,12 @@ const HomeScreen = ( props )=> {
   const [id, setID] = useState(-1);
 
   useEffect(() => {
+    console.log('thisID',props.id)
     if (props.id === -1) { 
       getAsynchStuff();
+    }
+    else{
+      setID(props.id)
     }
   }, [])
 
@@ -52,13 +56,13 @@ const HomeScreen = ( props )=> {
   }, [id])
 
   let signout = () => {
-      let url = 'http://localhost:3000/logout';
+      let url = 'http://d8b23e11.ngrok.io/logout';
       let options = {
         method: "DELETE",
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            'Access-Control-Allow-Origin':'http://localhost:3000'
+            'Access-Control-Allow-Origin':'http://d8b23e11.ngrok.io'
         }
       };
 
@@ -72,7 +76,7 @@ const HomeScreen = ( props )=> {
   }
   let getAsynchStuff = async () => {
     await AsyncStorage.getItem('userToken', (error, result)=>{
-      console.log(result);
+      console.log("The result is:",result);
       setID(parseInt(result));
     });
   }
