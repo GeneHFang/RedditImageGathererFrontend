@@ -8,12 +8,13 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Picker,
   View,
   Alert,
 } from 'react-native';
-import { Button } from 'react-native-elements';
+import { Button, ThemeProvider } from 'react-native-elements';
 import { incrementTest } from '../redux/actions/TestAction';
-import { logoutUser, assignUser } from '../redux/actions/CurrentLoggedInUser';
+import { logoutUser, assignUser, navSubreddit } from '../redux/actions/CurrentLoggedInUser';
 import {connect} from 'react-redux';
 import ImageContainer from '../containers/ImageContainer';
 
@@ -21,10 +22,11 @@ import ImageContainer from '../containers/ImageContainer';
 const mapDispatchToProps = {
   incrementTest,
   logoutUser,
-  assignUser
+  assignUser,
+  navSubreddit
 }
 const mapStateToProps = (state) => {
-  console.log("State: ",state)
+  // console.log("State: ",state)
   return ({
     increment: state.first.increment,
     id: state.second.id,
@@ -42,9 +44,12 @@ const HomeScreen = ( props )=> {
   useEffect(() => {
     if (props.id === -1) { 
       getAsynchStuff();
-      assignUser(id);
     }
   }, [])
+
+  useEffect(()=> {
+    props.assignUser(id);
+  }, [id])
 
   let signout = () => {
       let url = 'http://localhost:3000/logout';
@@ -66,21 +71,50 @@ const HomeScreen = ( props )=> {
       .catch(error=>Alert.alert("Some error",error, [{title:'ok'}]))
   }
   let getAsynchStuff = async () => {
-    let x = parseInt(await AsyncStorage.getItem('userToken'));
-    console.log(x);
-    setID(x);
+    await AsyncStorage.getItem('userToken', (error, result)=>{
+      console.log(result);
+      setID(parseInt(result));
+    });
   }
   let _signOutAsync = async () => {
     await AsyncStorage.clear();
     props.navigation.navigate('Auth');
   };
+
+  let showFavImages = () => {
+    props.navigation.navigate('Favorites')
+  }
+
   return (
     <View style={styles.container}>
+      <Picker
+            selectedValue={props.subreddit}
+            onValueChange={ itemValue =>{
+            props.navSubreddit(itemValue)
+            // console.log(props.subreddit)
+            }
+          }>
+          <Picker.Item label="All" value="all" />
+          <Picker.Item label="Animemes" value="animemes" />
+          <Picker.Item label="Memes" value="memes" />
+          <Picker.Item label="Cats" value="cats" />
+      </Picker>
+
+      <View style={styles.getStartedContainer}>
+          {/* <DevelopmentModeNotice /> */}
+            {/* <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
+            <Button title={`getAsyncTest`} onPress={getAsynchStuff}/>  */}
+          <Button style={{padding:5}} title="My Favorites" onPress={showFavImages} />
+          <ThemeProvider theme={{colors:{primary:'#FF4040'}}}>
+          <Button title="Sign Out" onPress={signout} />
+          </ThemeProvider>
+        </View>
+
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
         scrollEnabled={scrollable}>
-        <View style={styles.welcomeContainer}>
+        {/* <View style={styles.welcomeContainer}>
           <Image
             source={
               __DEV__
@@ -89,22 +123,14 @@ const HomeScreen = ( props )=> {
             }
             style={styles.welcomeImage}
           />
-        </View>
-
-        <View style={styles.getStartedContainer}>
-          {/* <DevelopmentModeNotice /> */}
-
-            <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
-            <Button title={`getAsyncTest`} onPress={getAsynchStuff}/> 
-          <Button title="Actually, sign me out :)" onPress={signout} />
-
-        </View>
+        </View> */}
+        
 
         <View style={styles.helpContainer}>
           <ImageContainer 
             subreddit={props.subreddit}
             toggleScroll={toggleScroll}
-            userID={id}  
+            userID={props.id}  
             />
         </View>
       </ScrollView>
@@ -161,7 +187,8 @@ function handleHelpPress() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    paddingBottom: 40,
+    backgroundColor: 'white'
   },
   developmentModeText: {
     marginBottom: 20,
@@ -174,9 +201,7 @@ const styles = StyleSheet.create({
     paddingTop: 30,
   },
   welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20,
+    alignItems: 'center'
   },
   welcomeImage: {
     width: 100,
@@ -187,7 +212,9 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
+    marginTop: -20,
     marginHorizontal: 50,
+    marginBottom: 5
   },
   homeScreenFilename: {
     marginVertical: 7,
@@ -235,8 +262,9 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   helpContainer: {
-    marginTop: 15,
     alignItems: 'center',
+    marginTop: -30,
+    marginBottom: 0
   },
   helpLink: {
     paddingVertical: 15,

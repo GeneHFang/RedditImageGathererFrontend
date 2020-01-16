@@ -5,11 +5,12 @@ import HomeScreen from '../screens/HomeScreen';
 import SignInScreen from '../screens/SignInScreen';
 import AuthLoadingScreen from '../screens/AuthLoadingScreen';
 import RegisterScreen from '../screens/RegisterScreen';
+import FaveScreen from '../screens/FaveScreen';
 
 import MainTabNavigator from './MainTabNavigator';
 
 
-const AppStack = createStackNavigator({ Home: HomeScreen });
+const AppStack = createStackNavigator({ Home: HomeScreen, Favorites: FaveScreen });
 const AuthStack = createStackNavigator({ SignIn: SignInScreen, Register: RegisterScreen });
 
 export default createAppContainer(

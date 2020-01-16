@@ -3,7 +3,7 @@ const defaultState = {
 }
 
 let reducer = (prevState = defaultState, action) => {
-    console.log("inside reducer");
+    // console.log("inside reducer");
     switch(action.type){
         case "INCREMENT":
             return {...prevState, increment: prevState.increment+1};

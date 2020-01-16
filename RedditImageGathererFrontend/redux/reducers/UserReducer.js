@@ -4,7 +4,7 @@ const defaultState = {
 }
 
 let userReducer = (prevState = defaultState, action) => {
-    console.log("inside reducer");
+    // console.log("inside reducer");
     switch(action.type){
         case "LOGIN":
             return {...prevState, id: action.payload};
