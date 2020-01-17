@@ -37,7 +37,7 @@ const FaveScreen = (props) => {
 
     useEffect(
         ()=> {
-            setURL(`http://d8b23e11.ngrok.io/api/v1/users/${props.id}`);
+            setURL(`http://7f24f26f.ngrok.io/api/v1/users/${props.id}`);
         },
         [props]
     )

@@ -49,13 +49,13 @@ const ImageContainer = (props) => {
     }
     let saveImageURL = (imgURL, fileType) => {
         // console.log("testingProps: ",props.userID);
-        let url = 'http://d8b23e11.ngrok.io/api/v1/images';
+        let url = 'http://7f24f26f.ngrok.io/api/v1/images';
         let options = {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Access-Control-Allow-Origin':'http://d8b23e11.ngrok.io'
+                'Access-Control-Allow-Origin':'http://7f24f26f.ngrok.io'
             },
             body: JSON.stringify({"image":{
                 url: imgURL,

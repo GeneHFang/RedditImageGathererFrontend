@@ -28,15 +28,15 @@ const ImageComponent = (props) => {
                 
             >
             <ThemeProvider theme={{colors:{primary:'#FFF'}}}>
-                <TouchableHighlight >
-                <View style={{width:'25%', flex:1, alignSelf:'stretch'}}>
+                <TouchableOpacity onLongPress={() => props.showMenu(true)}>
+                <View style={{width:'25%', flex:1, alignSelf:'stretch'}}  style={{height:500}}>
                 {/* <Text>Hello!</Text> */}
                     <Image resizeMode='contain' style={{width: props.dimensions, height: props.dimensions }} source={{uri:props.url}} /> 
                 
                 </View>
                 {/* <Button title="Pressable?"/> */}
-                </TouchableHighlight>
-          <Button  onLongPress={() => props.showMenu(true)} style={{height:500}}/>
+                </TouchableOpacity>
+          {/* <Button  /> */}
           </ThemeProvider>
             </GestureRecognizer>
         )

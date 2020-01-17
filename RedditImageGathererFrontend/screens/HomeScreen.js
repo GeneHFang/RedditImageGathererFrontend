@@ -56,13 +56,13 @@ const HomeScreen = ( props )=> {
   }, [id])
 
   let signout = () => {
-      let url = 'http://d8b23e11.ngrok.io/logout';
+      let url = 'http://7f24f26f.ngrok.io/logout';
       let options = {
         method: "DELETE",
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            'Access-Control-Allow-Origin':'http://d8b23e11.ngrok.io'
+            'Access-Control-Allow-Origin':'http://7f24f26f.ngrok.io'
         }
       };
 

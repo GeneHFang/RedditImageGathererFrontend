@@ -39,13 +39,13 @@ const FavoritesContainer = (props) => {
 
     let deleteImage = (id) => {
         // console.log("testingProps: ",props.userID);
-        let url = `http://d8b23e11.ngrok.io/api/v1/images/${id}`;
+        let url = `http://7f24f26f.ngrok.io/api/v1/images/${id}`;
         let options = {
             method: "DELETE",
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Access-Control-Allow-Origin':'http://d8b23e11.ngrok.io'
+                'Access-Control-Allow-Origin':'http://7f24f26f.ngrok.io'
             }
             }
 
