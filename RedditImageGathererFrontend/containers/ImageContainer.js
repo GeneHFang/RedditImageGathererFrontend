@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import {
-    View, Button,
+    View, Button, Alert
   } from 'react-native';
 import ImageComponent from '../components/ImageComponent';
 import ImageMenuComponent from '../components/ImageMenuComponent';
@@ -45,9 +45,10 @@ const ImageContainer = (props) => {
         // console.log("index: ",indPos, " arr: ", arr.length)
         if (indPos + direction < 0) { direction = 0; }
         else if (indPos + direction > arr.length-1) { direction = 0;}
+        else{ if (menu){setMenu(false)} }
         setInd(indPos + direction);
     }
-    let saveImageURL = (imgURL, fileType) => {
+    let saveImageURL = (imgURL, fileType, subreddit, nsfw, upvotes, webURL) => {
         // console.log("testingProps: ",props.userID);
         let url = 'http://7f24f26f.ngrok.io/api/v1/images';
         let options = {
@@ -60,16 +61,29 @@ const ImageContainer = (props) => {
             body: JSON.stringify({"image":{
                 url: imgURL,
                 'file_type': fileType,
-                'user_id': props.userID
+                'user_id': props.userID,
+                'subreddit_name': subreddit,
+                'nsfw': nsfw,
+                'upvotes': upvotes,
+                'web_url':webURL
             }})}
         
 
         fetch(url, options)
         .then(res=>res.json())
         .then(json=>{
-            // console.log(json)
+            console.log(json);
+            if (json.data) {
+                Alert.alert('Success', `Image added to your Favorites`, [{text:'OK', onPress:() => setMenu(false)}])
+            }
+            else if (json.url) {
+                Alert.alert('Error', 'Image already exists in your favorites!', [{text:'OK'}] )
+            }
         })
-        .catch(error=>console.log(error))
+        .catch(error=>{
+            console.log(error);
+            Alert.alert('Failure', error, [{text:'OK', onPress:() => {}}])
+        })
     };
     let showMenu = (boolVal) => {
         setMenu(boolVal);
@@ -132,6 +146,9 @@ const ImageContainer = (props) => {
                     showMenu={showMenu}        
                     saveImageURL={saveImageURL}
                     webURL={fullURL}
+                    subredditName={child.data.subreddit}
+                    nsfw={child.data["over_18"]}
+                    upvotes={child.data.ups}
                     url={parsedURL} 
                     fileType={type}    
                     />

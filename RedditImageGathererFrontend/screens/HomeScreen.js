@@ -76,7 +76,7 @@ const HomeScreen = ( props )=> {
   }
   let getAsynchStuff = async () => {
     await AsyncStorage.getItem('userToken', (error, result)=>{
-      console.log("The result is:",result);
+      // console.log("The result is:",result);
       setID(parseInt(result));
     });
   }
