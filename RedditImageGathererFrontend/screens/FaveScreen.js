@@ -122,21 +122,17 @@ const FaveScreen = (props) => {
         let albumID = null;
         let asset = null;
         const album = await MediaLibrary.getAlbumsAsync();
-        albumObj = await hasDownloadFolder(album);
-        albumID = albumObj.id+"";
+        
+        
+        // console.log('album id is', albumID);
 
 
-        arr.forEach((image, index) => {
-            const downloadResumable = FileSystem.createDownloadResumable(
-            `${image.url}`,
+        let assets = arr.map((image, index) => {
+            return FileSystem.createDownloadResumable(
+                `${image.url}`,
             FileSystem.documentDirectory + '.'+ image['file_type'], {})
-            downloadResumable.downloadAsync().then(value=>{
-                console.log(value.uri)
-                MediaLibrary.createAssetAsync(value.uri).then((value)=>{
-                    console.log(value)
-                    assetArray.push(value)
-                });
-            });
+            
+            
             
             // asset = await 
             // await 
@@ -145,27 +141,64 @@ const FaveScreen = (props) => {
             //   return asset
             
         });
-
-        setTimeout(async () => {
-        console.log(assetArray)
-        MediaLibrary.addAssetsToAlbumAsync(assetArray,albumID,false).then(() => {
+        try {
+            await Promise.all(assets);
+            let downloads = assets.map((asset) => {
+                asset.downloadAsync().then(value=>{
+                // console.log(value.uri)
+                MediaLibrary.createAssetAsync(value.uri).then((value)=>{
+                    // console.log(value)
+                    // assetArray.push(value)
+                    return value
+                    
+                });
+            });
+            });
+            try {
+            await Promise.all(downloads);
+            albumObj = await hasDownloadFolder(album);
+            albumID = albumObj.id+"";
+            // console.log(album);
+            // MediaLibrary.addAssetsToAlbumAsync()
+            // let status = false;
+            // assetArray.forEach(async (asset) => {
+            //     status = await MediaLibrary.addAssetsToAlbumAsync([asset],albumObj,false)
+            //     console.log(status)    
+            // })
+            let status = await MediaLibrary.addAssetsToAlbumAsync(assetArray,albumObj,false)
+            // if (status) {assetArray = [];
+            //     let pr = new Promise( (resolve, reject) => {
+                    
+                // })
         
-            assetArray = [];
-            let pr = new Promise( (resolve, reject) => {
-                Alert.alert('Download Success', `Images saved to download folder`, 
-                    [{text:'OK', onPress:() => {
-                        resolve(true);
-                        }}])
-            })
-    
-           
-    
-                pr.then((value=>{
-                    if (flag && value) {
-                        deleteAll();
-                    }
-                }))
-        })},4000);
+               
+        
+                //     pr.then((value=>{
+                //         if (flag && value) {
+                //             deleteAll();
+                //         }
+                //     }))
+            }
+            catch(error){
+                console.log(error)
+            }
+        }
+        catch(error){
+            console.log(error)
+        }
+        finally{
+            AlertAsync('Download Success', `Images saved to download folder`, 
+                        [{text:'OK', onPress:() => {
+                            assetArray=[];
+                            }}])
+            if (flag) {
+                deleteAll()
+            }
+        }
+
+        // setTimeout(async () => {
+        // console.log(assetArray)
+    // },4000);
     
 
        
