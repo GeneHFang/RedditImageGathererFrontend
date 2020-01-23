@@ -1,6 +1,7 @@
 const defaultState = {
     id: -1,
     subreddit: 'all',
+    nsfw: false
 }
 
 let userReducer = (prevState = defaultState, action) => {
@@ -11,7 +12,9 @@ let userReducer = (prevState = defaultState, action) => {
         case "LOGOUT":
             return {...prevState, id: -1};
         case "NAV_SUBREDDIT":
-            return {...prevState, subreddit: action.payload}
+            return {...prevState, subreddit: action.payload};
+        case "NSFW":
+            return {...prevState, nsfw: !prevState.nsfw};
         default:
             return prevState;
     }

@@ -1,17 +1,23 @@
 import React, {useState, useEffect} from 'react';
 import {
-    View, Button, Alert
+    View, Button, Alert, ScrollView, RefreshControl
   } from 'react-native';
 import ImageComponent from '../components/ImageComponent';
 import ImageMenuComponent from '../components/ImageMenuComponent';
+import {connect} from 'react-redux';
 
-
+const mapStateToProps = (state) => {
+    // console.log("State: ",state)
+    return ({
+      nsfw: state.second.nsfw
+    })
+  }
 
 const ImageContainer = (props) => {
     //2 is placeholder
     const [url, setURL] = useState(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
     
-
+    const [refreshing, setRefresh] = useState(false);
     const [arr, setArr] = useState([]);
     const [full, toggleFull] = useState(false);
     const [img, setImg] = useState({
@@ -93,11 +99,25 @@ const ImageContainer = (props) => {
         // console.log("rerendeing",props)
         // setArr([]);
         setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
-        // console.log(url);
+        console.log(url);
         
 
     }, [props]);
+    useEffect(()=>{
+        setRefresh(false);
+    },[arr])
 
+    
+    let refetch = ()=>{
+        fetch(url)
+        .then(res=>res.json())
+        .then(json=> {
+            setRefresh(true)
+            setArr(json.data.children.filter(child=> {
+                return child.data['post_hint']==='image'
+            }))
+        })
+    }
 
 
 
@@ -106,7 +126,10 @@ const ImageContainer = (props) => {
         fetch(url)
         .then(res=>res.json())
         .then(json=> {
-            setArr(json.data.children.filter(child=> child.data['post_hint']==='image'));
+            setArr(json.data.children.filter(child=> {
+                // console.log(child.data.thumbnail)
+                return child.data['post_hint']==='image'
+            }));
         })
     }, [url]);
 
@@ -116,20 +139,52 @@ const ImageContainer = (props) => {
 
     let renderImages = () => {
         return(
+        <ScrollView
+            style={
+                {
+                    flex: 1,
+                    marginBottom: 60,
+                    marginTop:20
+                }
+            }
+            scrollable
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={refetch}/>
+            } >
         <View style={{flex:1, flexDirection: 'row', flexWrap:'wrap', padding: '5%'}}>
             {arr.map((child,ind) => {
+                let thumbURL = ""
                 if(child.data['post_hint'] === 'image') {
+                    if (props.nsfw) {
+                        if (child.data.thumbnail === 'nsfw')
+                        {
+                            let url = child.data.preview.images[0].resolutions[0].url;
+                            let type = url.split('?')[0].split('.');
+                            type = type[type.length-1];
+                            let parsedURL = url.replace(/amp;/g,'');
+                            console.log(parsedURL)
+                            thumbURL = parsedURL;
+                        }
+                        else {
+                            thumbURL = child.data.thumbnail
+                        }
+                    }
+                    else {
+                        thumbURL = child.data.thumbnail
+                    }
                     return(<ImageComponent 
                     key={child.data.id}
                     index={ind} 
-                    url={child.data.thumbnail} 
+                    nsfw={props.nsfw ? false : child.data.thumbnail === 'nsfw'}
+                    url={thumbURL} 
                     fullImg={child.data.preview.images[0].source.url}
                     dimensions={100}
                     toggle={toggleChange}
                     />)
                 }
             })}
-         </View>)
+         </View>
+         </ScrollView>)
     };
 
     let renderImage = (menu) => {
@@ -181,4 +236,4 @@ const ImageContainer = (props) => {
     );
 }
 
-export default ImageContainer; 
+export default connect(mapStateToProps)(ImageContainer); 

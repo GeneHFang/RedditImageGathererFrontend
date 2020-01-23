@@ -17,6 +17,9 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 
 const ImageComponent = (props) => {
 // onSwipeDown={() => props.saveImageURL(props.url,props.fileType)}
+    // if (!props.nsfw) {
+    //     console.log(props.url)
+    // }
     if (props.fileType){
 
         return (
@@ -45,7 +48,7 @@ const ImageComponent = (props) => {
     return(
         <View style={{width: '25%', zIndex:1}}>
             <TouchableOpacity onPress={() => props.toggle(props.fullImg, true, props.index)}>
-                <Image style={{width: props.dimensions, height: props.dimensions }} source={{uri:props.url}} /> 
+                <Image style={{width: props.dimensions, height: props.dimensions }} source={props.nsfw? require('../assets/images/nsfw.png'): {uri:props.url}} /> 
             </TouchableOpacity>
         </View>
     )

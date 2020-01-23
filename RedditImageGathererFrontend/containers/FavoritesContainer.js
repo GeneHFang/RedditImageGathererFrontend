@@ -3,6 +3,7 @@ import {
     View, 
     Text,
     ScrollView, 
+    Button
 } from 'react-native';
 import ImageComponent from '../components/ImageComponent';
 import { navSubreddit } from '../redux/actions/CurrentLoggedInUser';
@@ -31,8 +32,9 @@ const FavoritesContainer = (props) => {
     useEffect(()=>{
         // console.log("is this happening?", props.images)
         showMenu(false);
+        toggleFull(false);
         // if (props.images[currentIndex]){toggleView()};
-        // console.log("test means this also happened: ", imgArr)
+        console.log("test means this also happened: ")
     }, [props.images])
 
     useEffect(() => {
@@ -66,10 +68,11 @@ const FavoritesContainer = (props) => {
             // console.log(currentIndex)
             newArr.splice(currentIndex,1);
             props.updateImages(newArr);
-            showMenu(false);
-            toggleFull(false);
         })
         .catch(error=>console.log(error))
+        showMenu(false);
+        toggleFull(false);
+        setIndex(0)
     };
 
 
@@ -146,6 +149,7 @@ const FavoritesContainer = (props) => {
    
     return (
         <View >
+            {/* <Button title="What are my props" onPress={()=>console.log(props, currentIndex, full)}/> */}
             {props.images[0] ? 
             (full ? 
                 renderImage(false)

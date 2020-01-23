@@ -50,7 +50,7 @@ const FaveScreen = (props) => {
         let albumID = "";
         for (let i = 0 ; i < albumsArray.length; i++){
             if (albumsArray[i].title){
-                if (albumsArray[i].title.toLowerCase() === "download"){
+                if (albumsArray[i].title.toLowerCase() === "dcim"){
                     return albumsArray[i];
                     break;
                 }
@@ -158,14 +158,27 @@ const FaveScreen = (props) => {
             await Promise.all(downloads);
             albumObj = await hasDownloadFolder(album);
             albumID = albumObj.id+"";
-            // console.log(album);
+
+            // console.log(albumObj);
             // MediaLibrary.addAssetsToAlbumAsync()
             // let status = false;
             // assetArray.forEach(async (asset) => {
             //     status = await MediaLibrary.addAssetsToAlbumAsync([asset],albumObj,false)
             //     console.log(status)    
             // })
-            let status = await MediaLibrary.addAssetsToAlbumAsync(assetArray,albumObj,false)
+            let stati = assetArray.map((asset) => {
+                MediaLibrary.createAssetAsync([asset],albumObj,false).then(value=>{
+                    return value
+                })
+            })
+            // console.log(stati)
+            // await
+             Promise.all(
+                stati
+             ).then(()=>
+            // let status = await MediaLibrary.addAssetsToAlbumAsync(assetArray,albumObj,false).catch(console.log)
+            // .then(value => console.log(value))
+            // console.log(status)
             // if (status) {assetArray = [];
             //     let pr = new Promise( (resolve, reject) => {
                     
@@ -178,6 +191,11 @@ const FaveScreen = (props) => {
                 //             deleteAll();
                 //         }
                 //     }))
+                {Alert.alert('Download Success', `Images saved to download folder`, 
+                            [{text:'OK', onPress:() => {
+                                assetArray=[];
+                                }}])}
+            )
             }
             catch(error){
                 console.log(error)
@@ -187,10 +205,6 @@ const FaveScreen = (props) => {
             console.log(error)
         }
         finally{
-            AlertAsync('Download Success', `Images saved to download folder`, 
-                        [{text:'OK', onPress:() => {
-                            assetArray=[];
-                            }}])
             if (flag) {
                 deleteAll()
             }
@@ -213,7 +227,9 @@ const FaveScreen = (props) => {
 
     return (
         <View>
-            <Button title="Download All Favorites" onPress={downloadAll}/>
+            <Button title="Download All Favorites" onPress={()=>{
+                downloadAll();
+                }}/>
             <Text style={{alignSelf:'center', padding:5}}>{`Your Favorites:`}</Text>
             <FavoritesContainer 
                 images={arr}

@@ -30,7 +30,10 @@ const RegisterScreen = (props) => {
 
             fetch(url, options)
             .then(resp=>resp.json())
-            .then(json=>props.navigation.navigate('SignIn'))
+            .then(json=>{
+                Alert.alert('Success!','Please sign in')
+                props.navigation.navigate('SignIn')
+            })
             // ;
             
 
@@ -59,28 +62,36 @@ const RegisterScreen = (props) => {
             onSubmit={values => submitHandler(values)}
             >
                 {({ handleChange, handleBlur, handleSubmit, values }) => (
-                <View>
-                    <Text>Username</Text>  
+                    <View style={{paddingTop:40}}>
+                    <Text style={{alignSelf:'center'}}>Username</Text>  
                     <TextInput
+                        autoCapitalize="none"
+                        style={{borderColor:'gray', padding:20, fontSize:20, alignSelf:'center'}}
                         onChangeText={handleChange("username")}
                         onBlur={handleBlur("username")}
                         value={values.username}
                     />
-                    <Text>Password</Text>  
+                    <Text style={{alignSelf:'center'}}>Password</Text>  
                     <TextInput
+                        autoCapitalize="none"
+                        style={{borderColor:'gray', padding:20, fontSize:20, alignSelf:'center'}}
                         secureTextEntry
                         onChangeText={handleChange("password")}
                         onBlur={handleBlur("password")}
                         value={values.password}
                     />
-                    <Text>Confirm Password</Text>
+                    <Text style={{alignSelf:'center'}}>Confirm Password</Text>
                     <TextInput
+                        autoCapitalize="none"
+                        style={{borderColor:'gray', padding:20, fontSize:20, alignSelf:'center'}}
                         secureTextEntry
                         onChangeText={handleChange("password_confirm")}
                         onBlur={handleBlur("password_confirm")}
                         value={values.email}
                     />
+                    <View style={{paddingHorizontal:30}} >
                     <Button onPress={handleSubmit} title="Submit" />
+                    </View>
                 </View>
             )}
         </Formik>

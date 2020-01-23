@@ -1,5 +1,5 @@
 import * as WebBrowser from 'expo-web-browser';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Fragment} from 'react';
 import {
   Image,
   Platform,
@@ -8,38 +8,53 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
+  Keyboard,
   Picker,
   View,
   Alert,
+  Switch,
+  RefreshControl,
 } from 'react-native';
-import { Button, ThemeProvider } from 'react-native-elements';
+import { Button, ThemeProvider, Header } from 'react-native-elements';
 import { incrementTest } from '../redux/actions/TestAction';
-import { logoutUser, assignUser, navSubreddit } from '../redux/actions/CurrentLoggedInUser';
+import { logoutUser, assignUser, navSubreddit, toggleNSFW } from '../redux/actions/CurrentLoggedInUser';
 import {connect} from 'react-redux';
 import ImageContainer from '../containers/ImageContainer';
+import Autocomplete from 'react-native-autocomplete-input';
+import SideMenu from 'react-native-side-menu';
 
 
 const mapDispatchToProps = {
   incrementTest,
   logoutUser,
   assignUser,
-  navSubreddit
+  navSubreddit,
+  toggleNSFW
 }
 const mapStateToProps = (state) => {
   // console.log("State: ",state)
   return ({
     increment: state.first.increment,
     id: state.second.id,
-    subreddit: state.second.subreddit
+    subreddit: state.second.subreddit,
+    nsfw: state.second.nsfw
   })
 }
 
 import { MonoText } from '../components/StyledText';
+import { SafeAreaView, withNavigation } from 'react-navigation';
+
+// const drawer = createDrawerNavigator();
+// console.log(drawer)
 
 const HomeScreen = ( props )=> {
 
   const [scrollable, toggleScroll] = useState(true);
   const [id, setID] = useState(-1);
+  const [query, setQuery] = useState("");
+  const [subredditList, setredditList] = useState("");
+  const [refreshing, setRefresh] = useState(false);
+  const [isOpen, setOpen] = useState(false);
 
   useEffect(() => {
     console.log('thisID',props.id)
@@ -49,11 +64,43 @@ const HomeScreen = ( props )=> {
     else{
       setID(props.id)
     }
+    
+
+
   }, [])
 
   useEffect(()=> {
     props.assignUser(id);
+    let userData;
+    let data =['all', 'animemes', 'azurelane', 'cats', 'memes', 'funny'];
+    let url;
+    if (props.id===-1){url= `http://7f24f26f.ngrok.io/api/v1/users/${id}`}
+    else{
+        url=`http://7f24f26f.ngrok.io/api/v1/users/${props.id}`
+    }
+      fetch(url)
+                  .then(res => res.json())
+                  .then(json=> {
+                    // console.log(json)
+                    userData = json.data.attributes.subreddits.map(subreddit=> {
+                      return (subreddit.name.toLowerCase())
+                    })
+                    let allData = [...userData, ...data].filter((val,index,self)=> {
+                        return self.indexOf(val) === index;
+                    })
+                    setredditList(allData)
+
+                  })
+                
   }, [id])
+
+  
+
+  
+
+  useEffect(()=>{
+    // console.log(query)
+  }, [query])
 
   let signout = () => {
       let url = 'http://7f24f26f.ngrok.io/logout';
@@ -88,36 +135,113 @@ const HomeScreen = ( props )=> {
   let showFavImages = () => {
     props.navigation.navigate('Favorites')
   }
+  
+  let compare = (a,b) => {return a.toLowerCase().trim() === b.toLowerCase().trim()};
+  
+  
 
+  let getData = () => {
+    let queryLength = query.length;
+    let arr = [];
+    if (queryLength < 1) {return arr}
+    else{
+      for (let i = 0; i < subredditList.length-1 ; i++)
+      {
+        if (compare(query, subredditList[i].substring(0,queryLength)))
+          {
+            arr.push(subredditList[i])  
+          }
+      }
+    }
+    if (arr.length < 1) { arr.push(query)}
+    return arr
+  }
+
+  let MenuComponent = (
+    <View style={styles.getStartedContainer}>
+      <Text>NSFW Toggle</Text>
+          {/* <DevelopmentModeNotice /> */}
+            {/* <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
+            <Button title={`getAsyncTest`} onPress={getAsynchStuff}/>  */}
+            <Switch value={props.nsfw} onChange={props.toggleNSFW}/> 
+          <Button style={{padding:5}} title="My Favorites" onPress={showFavImages} />
+          <ThemeProvider theme={{colors:{primary:'#FF4040'}}}>
+          <Button style={{padding:5}} title="Sign Out" onPress={signout} />
+          </ThemeProvider>
+        </View>
+  )
+  
   return (
+    // <drawer.Navigator>
+    // <drawer.Screen name="main"
+    // component={(<Button title="hello"/>)}
+    // />
+    // </drawer.Navigator>
+    
+    <SideMenu
+      isOpen={isOpen}
+      menu={MenuComponent}
+      >
     <View style={styles.container}>
+
+    <Header
+        leftComponent={{icon:'menu', onPress:()=>{setOpen(!isOpen)}}}
+        centerComponent={
+          {text:`Currently browsing: r/${props.subreddit}`, style:{color:'#fff'}}}
+    />
+      <View style={{ flex: 1,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top:90,
+    zIndex: 1}}>
+      <Autocomplete 
+      style={{alignSelf:'center'}}
+      data={
+        getData()
+      }
+      autoCapitalize="none"
+      placeholder="Enter Subreddit Name"
+      defaultValue={query}
+      renderItem={({item,index})=>(
+        <TouchableOpacity onPress={()=>{
+            props.navSubreddit(item);
+            setQuery("");
+            Keyboard.dismiss();
+          }}>
+          <Text>{item}</Text>
+        </TouchableOpacity>
+      )}
+      keyExtractor={(item,index)=>item+""+index}
+      onChangeText={(text)=>setQuery(text)}
+      // hideResults
+      /></View>
+
+      {/* <View style={{padding:5, marginTop:40}}>
       <Picker
             selectedValue={props.subreddit}
             onValueChange={ itemValue =>{
             props.navSubreddit(itemValue)
             // console.log(props.subreddit)
             }
-          }>
+          }
+            style={{paddingTop:40}}
+          >
           <Picker.Item label="All" value="all" />
           <Picker.Item label="Animemes" value="animemes" />
           <Picker.Item label="Memes" value="memes" />
           <Picker.Item label="Cats" value="cats" />
-      </Picker>
+      </Picker></View> */}
+      
+      
+      
 
-      <View style={styles.getStartedContainer}>
-          {/* <DevelopmentModeNotice /> */}
-            {/* <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
-            <Button title={`getAsyncTest`} onPress={getAsynchStuff}/>  */}
-          <Button style={{padding:5}} title="My Favorites" onPress={showFavImages} />
-          <ThemeProvider theme={{colors:{primary:'#FF4040'}}}>
-          <Button title="Sign Out" onPress={signout} />
-          </ThemeProvider>
-        </View>
-
-      <ScrollView
+      {/* <ScrollView */}
+      {/* <View
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-        scrollEnabled={scrollable}>
+        // scrollEnabled={scrollable}
+         > */}
         {/* <View style={styles.welcomeContainer}>
           <Image
             source={
@@ -137,14 +261,13 @@ const HomeScreen = ( props )=> {
             userID={props.id}  
             />
         </View>
-      </ScrollView>
+        {/* </View> */}
+      {/* </ScrollView> */}
 
-      <View style={styles.tabBarInfoContainer}>
-        <Text style={styles.tabBarInfoText}>
-          {`Currently browsing: R/${props.subreddit}`}
-        </Text>
-      </View>
+      
     </View>
+    
+    </SideMenu>
   );
 }
 
@@ -202,7 +325,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   contentContainer: {
-    paddingTop: 30,
+    paddingTop: 40,
   },
   welcomeContainer: {
     alignItems: 'center'
@@ -216,9 +339,9 @@ const styles = StyleSheet.create({
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginTop: -20,
+    marginTop: 60,
     marginHorizontal: 50,
-    marginBottom: 5
+    paddingBottom:30
   },
   homeScreenFilename: {
     marginVertical: 7,
@@ -267,7 +390,7 @@ const styles = StyleSheet.create({
   },
   helpContainer: {
     alignItems: 'center',
-    marginTop: -30,
+    marginTop: 20,
     marginBottom: 0
   },
   helpLink: {

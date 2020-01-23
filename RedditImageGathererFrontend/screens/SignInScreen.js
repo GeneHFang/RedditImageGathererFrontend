@@ -35,7 +35,10 @@ const msp = (state) => {
 
     }
     static navigationOptions = {
-      title: 'Please sign in',
+      title: 'Please Sign In',
+      headerTitleStyle:{
+          fontWeight:'bold'
+      }
     };
 
     goToRegistration = async () => {
@@ -89,23 +92,28 @@ const msp = (state) => {
     
                 >
             {({ handleChange, handleBlur, handleSubmit, values }) => (
-                <View>
-                    <Text>Username ({`${this.props.increment}`})</Text>  
+                <View style={{paddingTop:40}}>
+                    <Text style={{alignSelf:'center'}}>Username</Text>  
                     <TextInput
+                        autoCapitalize="none"
+                        style={{borderColor:'gray', padding:20, fontSize:20, alignSelf:'center'}}
                         onChangeText={handleChange("username")}
                         onBlur={handleBlur("username")}
                         value={values.username}
                     />
-                    <Text>Password</Text>  
+                    <Text style={{alignSelf:'center'}}>Password</Text>  
                     <TextInput
+                        autoCapitalize="none"
+                        style={{borderColor:'gray', padding:20, fontSize:20, alignSelf:'center'}}
                         secureTextEntry
                         onChangeText={handleChange("password")}
                         onBlur={handleBlur("password")}
                         value={values.password}
                     />
+                    <View style={{paddingHorizontal:30}} >
                     <Button onPress={handleSubmit} title="Submit" />
                     <Button onPress={this.goToRegistration} title="Sign up?"/>
-                    <Button onPress={this.props.incrementTest} title="Inc"/> 
+                    </View>
                 </View>
             )}
     {/* <View>

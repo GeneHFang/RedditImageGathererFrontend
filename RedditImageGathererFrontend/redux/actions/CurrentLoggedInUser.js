@@ -10,3 +10,7 @@ export const navSubreddit = (subreddit) => {
     // console.log("nav search sub",subreddit)
     return {type: "NAV_SUBREDDIT", payload: subreddit}
 }
+
+export const toggleNSFW = () => {
+    return {type: "NSFW"}
+}

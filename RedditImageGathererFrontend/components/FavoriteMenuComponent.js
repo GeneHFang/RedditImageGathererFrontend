@@ -39,13 +39,15 @@ const FavoriteMenuComponent = (props) => {
     }
 
     let save  = async () => {
-        await AlertAsync('Remove from Favorites after Download?', `Selecting 'Yes' will remove this image from your Favorites`, 
+        let al = ()=> {return new Promise((resolve,reject)=>{ AlertAsync('Remove from Favorites after Download?', `Selecting 'Yes' will remove this image from your Favorites`, 
         [{text:'Yes', onPress:()=>{ props.deleteAfter ? null : props.deleteAfterChange(true);
-                                    Promise.resolve('YES')}}, 
+                                    resolve(true)}}, 
         {text: 'No', onPress: ()=>{ props.deleteAfter ? props.deleteAfterChange(false) : null;
-                                    Promise.resolve('YES')}}],
+                                    resolve(false)}}],
         { cancelable: false });
+        });}
         // console.log(props.url)
+        let resp = await al();
         MediaLibrary.requestPermissionsAsync();
         const downloadResumable = FileSystem.createDownloadResumable(
             `${props.url}`,
@@ -60,16 +62,16 @@ const FavoriteMenuComponent = (props) => {
             // console.log(uri)
             if (albumObj){
                 let albumID = albumObj.id+"";
-                finish = await MediaLibrary.addAssetsToAlbumAsync([asset],albumID,false);
+                MediaLibrary.addAssetsToAlbumAsync([asset],albumID,false).then(
+                    Alert.alert('Download Success', `Image saved to ${albumObj.title} folder`, 
+                [{text:'OK', onPress:() => {
+                props.showMenu(false);}}])
+                );
             }
             else {
                 MediaLibrary.saveToLibraryAsync(asset.uri)
             }
-            AlertAsync('Download Success', `Image saved to ${albumObj.title} folder`, 
-            [{text:'OK', onPress:() => {
-                props.deleteAfter ? props.deleteImage(props.imageID) : null 
-                props.showMenu(false);}}])
-            if (props.deleteAfter) {props.deleteImage(props.imageID)}
+            if (resp) {props.deleteImage(props.imageID)}
         }
         catch( e) {
             console.log(e)
@@ -82,7 +84,7 @@ const FavoriteMenuComponent = (props) => {
             <View style={{padding:10}} >
             <Button style={stylesheet} onPress={() => props.deleteImage(props.imageID)} title='Remove from Favorites'/>
             <Button style={stylesheet} onPress={save} title="Save Image to Downloads"/>
-            <Button style={stylesheet} onPress={() => console.log(props)} title="what's props"/>
+            {/* <Button style={stylesheet} onPress={() => console.log(props)} title="what's props"/> */}
             <Button style={stylesheet} onPress={()=> Linking.openURL(props.webURL)} title='Go To Thread'/>
             <ThemeProvider theme={{colors:{primary:'#FF4040'}}}>
             <Button style={stylesheet} title='Close Menu' onPress={() => props.showMenu(false)}/>
