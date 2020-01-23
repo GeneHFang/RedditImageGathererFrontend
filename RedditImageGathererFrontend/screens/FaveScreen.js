@@ -225,12 +225,13 @@ const FaveScreen = (props) => {
 
 
     return (
-        <View>
+        <View style={{backgroundColor:(props.navigation.getParam('dark') ? '#353C51' : 'white'), flex:1, resizeMode:'cover'}}>
             <Button title="Download All Favorites" onPress={()=>{
                 downloadAll();
                 }}/>
-            <Text style={{alignSelf:'center', padding:5}}>{`Your Favorites:`}</Text>
+            <Text style={{alignSelf:'center', padding:5, color:(props.navigation.getParam('dark')? 'white':'black')}}>{`Your Favorites:`}</Text>
             <FavoritesContainer 
+                dark={props.navigation.getParam('dark')} 
                 images={arr}
                 updateImages={setArr}
             />

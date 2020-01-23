@@ -162,7 +162,7 @@ const FavoritesContainer = (props) => {
             </ScrollView>
             )
             :
-            <Text style={{alignSelf:'center'}}>{"Uh oh, you don't have any favorites!\n Go browse and add some Favorites!"}</Text>}
+            <Text style={{alignSelf:'center', color:(props.dark ? 'white':'black')}}>{"Uh oh, you don't have any favorites!\n Go browse and add some Favorites!"}</Text>}
             {menu ? 
                 renderImage(true)
                 :

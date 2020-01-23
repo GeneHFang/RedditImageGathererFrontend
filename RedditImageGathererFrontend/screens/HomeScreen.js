@@ -56,6 +56,7 @@ const HomeScreen = ( props )=> {
   const [subredditList, setredditList] = useState("");
   const [refreshing, setRefresh] = useState(false);
   const [isOpen, setOpen] = useState(false);
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
     console.log('thisID',props.id)
@@ -91,7 +92,7 @@ const HomeScreen = ( props )=> {
                     })
                     setredditList(allData)
 
-                  })
+                  }).catch((e)=>{})
                 
   }, [id])
 
@@ -134,7 +135,7 @@ const HomeScreen = ( props )=> {
   };
 
   let showFavImages = () => {
-    props.navigation.navigate('Favorites')
+    props.navigation.navigate('Favorites',{dark:dark})
   }
   
   let compare = (a,b) => {return a.toLowerCase().trim() === b.toLowerCase().trim()};
@@ -157,22 +158,40 @@ const HomeScreen = ( props )=> {
     if (arr.length < 1) { arr.push(query)}
     return arr
   }
-
+  const getStartedContainer = {
+    alignItems: 'center',
+    marginTop: 0,
+    marginHorizontal: 0,
+    paddingTop:40,
+    backgroundColor:(dark ? '#353C51' : 'white'),
+    flex:1,
+    resizeMode:'cover'
+  }
+  const container= {
+    flex: 1,
+    paddingBottom: 40,
+    backgroundColor: (dark ? '#353C51' : 'white'),
+    resizeMode:'cover'
+    
+  }
   let MenuComponent = (
-    <Fragment>
-    <View style={styles.getStartedContainer}>
-      <Text>NSFW Toggle</Text>
+    
+    <View style={getStartedContainer}>
+      <Text style={dark ? {color:'white'} : {color:'black'}}>NSFW Toggle</Text>
           {/* <DevelopmentModeNotice /> */}
             {/* <Button title={`Increment it! it: ${props.increment}`} onPress={props.incrementTest}/> 
             <Button title={`getAsyncTest`} onPress={getAsynchStuff}/>  */}
-            <Switch value={props.nsfw} onChange={props.toggleNSFW}/> 
+            <Switch value={props.nsfw} onChange={props.toggleNSFW}/>
+            
+      <Text style={dark ? {color:'white'} : {color:'black'}}>Dark Mode</Text>
+            <Switch value={dark} onChange={()=>setDark(!dark)}/>  
           <Button style={{padding:5}} title="My Favorites" onPress={showFavImages} />
           <ThemeProvider theme={{colors:{primary:'#FF4040'}}}>
           <Button style={{padding:5}} title="Sign Out" onPress={signout} />
           </ThemeProvider>
         </View>
-        </Fragment>
   )
+  
   
   return (
     // <drawer.Navigator>
@@ -182,6 +201,7 @@ const HomeScreen = ( props )=> {
     // </drawer.Navigator>
     
     <SideMenu
+      
       isOpen={isOpen}
       menu={MenuComponent}
       disableGestures={true}
@@ -189,7 +209,7 @@ const HomeScreen = ( props )=> {
       bouncBackOnOverDraw={false}
       openMenuOffset={0.4*Math.round(Dimensions.get('window').width)}
       >
-    <View style={styles.container}>
+    <View style={container}>
 
     <Header
         leftComponent={{icon:'menu', onPress:()=>{if (!isOpen) {setOpen(true)}}}}
@@ -203,7 +223,7 @@ const HomeScreen = ( props )=> {
     top:90,
     zIndex: 1}}>
       <Autocomplete 
-      style={{alignSelf:'center'}}
+      style={{alignSelf:'center', color:(dark? 'white':'black')}}
       data={
         getData()
       }
@@ -211,12 +231,14 @@ const HomeScreen = ( props )=> {
       placeholder="Enter Subreddit Name"
       defaultValue={query}
       renderItem={({item,index})=>(
-        <TouchableOpacity onPress={()=>{
+        <TouchableOpacity 
+          style={{flex:1, resizeMode:'cover', backgroundColor:(dark ? '#353C51': 'white')}}
+          onPress={()=>{
             props.navSubreddit(item);
             setQuery("");
             Keyboard.dismiss();
           }}>
-          <Text>{item}</Text>
+          <Text style={{ alignSelf:'center', color:(dark? 'white':'black')}}>{item}</Text>
         </TouchableOpacity>
       )}
       keyExtractor={(item,index)=>item+""+index}
@@ -265,7 +287,8 @@ const HomeScreen = ( props )=> {
           <ImageContainer 
             subreddit={props.subreddit}
             toggleScroll={toggleScroll}
-            userID={props.id}  
+            userID={props.id}
+            dark={dark}  
             />
         </View>
         {/* </View> */}
@@ -304,6 +327,8 @@ function DevelopmentModeNotice() {
     );
   }
 
+  
+
 }
 
 function handleLearnMorePress() {
@@ -319,11 +344,7 @@ function handleHelpPress() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingBottom: 40,
-    backgroundColor: 'white'
-  },
+  
   developmentModeText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
@@ -343,12 +364,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginTop: 3,
     marginLeft: -10,
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginTop: 60,
-    marginHorizontal: 20,
-    paddingBottom:30
   },
   homeScreenFilename: {
     marginVertical: 7,

@@ -238,7 +238,7 @@ const ImageContainer = (props) => {
     };
 
     return (
-        <View>
+        <View style={props.dark ? {backgroundColor:'#353C51'} : {backgroundColor:'white'}}>
         {full 
             ? arr[0] ? renderImage(false)   : null  
             :
