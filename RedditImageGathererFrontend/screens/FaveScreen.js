@@ -50,7 +50,7 @@ const FaveScreen = (props) => {
         let albumID = "";
         for (let i = 0 ; i < albumsArray.length; i++){
             if (albumsArray[i].title){
-                if (albumsArray[i].title.toLowerCase() === "dcim"){
+                if (albumsArray[i].title.toLowerCase() === "download"){
                     return albumsArray[i];
                     break;
                 }
@@ -110,7 +110,7 @@ const FaveScreen = (props) => {
             return("")
         }
         let flag = false;
-        MediaLibrary.requestPermissionsAsync(); 
+        let resp = await MediaLibrary.requestPermissionsAsync(); 
         await AlertAsync('Remove images from Favorites after Download?', `Selecting 'Yes' will remove all images from your Favorites after successful download`, 
             [{text:'Yes', onPress:()=>{ flag = true;
                                         Promise.resolve('YES')}}, 
@@ -127,84 +127,83 @@ const FaveScreen = (props) => {
         // console.log('album id is', albumID);
 
 
-        let assets = arr.map((image, index) => {
-            return FileSystem.createDownloadResumable(
-                `${image.url}`,
-            FileSystem.documentDirectory + '.'+ image['file_type'], {})
+        // let assets = arr.map((image, index) => {
+            try{
+            for (let i = 0 ; i < arr.length; i++){
+            let download =  FileSystem.createDownloadResumable(
+                `${arr[i].url}`,
+            FileSystem.documentDirectory + '.'+ arr[i]['file_type'], {})
             
-            
-            
+            let { uri } = await download.downloadAsync();
+            let asse = await MediaLibrary.createAssetAsync(uri);
+            let alb = await MediaLibrary.getAlbumsAsync();   
+            let alObj = await hasDownloadFolder(alb);
+            if (alObj){
+                console.log("here")
+                let albumID = alObj.id+"";
+                MediaLibrary.addAssetsToAlbumAsync([asse],albumID,false)
+                .then((value)=>console.log("success: ",value))
+            }
+        }
+        }
             // asset = await 
             // await 
             // console.log(uri, asset)
             
             //   return asset
-            
-        });
-        try {
-            await Promise.all(assets);
-            let downloads = assets.map((asset) => {
-                asset.downloadAsync().then(value=>{
-                // console.log(value.uri)
-                MediaLibrary.createAssetAsync(value.uri).then((value)=>{
-                    // console.log(value)
-                    // assetArray.push(value)
-                    return value
+            // }
+        // });
+        // try {
+        //     await Promise.all(assets);
+        //     console.log("this is assets",assets)
+        //     let downloads = assets.map((asset) => {
+        //         asset.downloadAsync().then(async (value)=>{
+        //         console.log(value.uri)
+        //         let x = await MediaLibrary.createAssetAsync(value.uri+"")
+        //         //Commented before
+        //         // .then((value)=>{
+        //         //     // console.log(value)
+        //         //     // assetArray.push(value)
+        //         //     return value
                     
-                });
-            });
-            });
-            try {
-            await Promise.all(downloads);
-            albumObj = await hasDownloadFolder(album);
-            albumID = albumObj.id+"";
+        //         // });End commented before
+        //         console.log(x);
+        //         return x
+        //     });
+        //     });
+        //     console.log("this is downloads",downloads)
+        //     try {
+        //     await Promise.all(downloads);
+        //     albumObj = await hasDownloadFolder(album);
+        //     albumID = albumObj.id+"";
 
-            // console.log(albumObj);
-            // MediaLibrary.addAssetsToAlbumAsync()
-            // let status = false;
-            // assetArray.forEach(async (asset) => {
-            //     status = await MediaLibrary.addAssetsToAlbumAsync([asset],albumObj,false)
-            //     console.log(status)    
-            // })
-            let stati = assetArray.map((asset) => {
-                MediaLibrary.createAssetAsync([asset],albumObj,false).then(value=>{
-                    return value
-                })
-            })
-            // console.log(stati)
-            // await
-             Promise.all(
-                stati
-             ).then(()=>
-            // let status = await MediaLibrary.addAssetsToAlbumAsync(assetArray,albumObj,false).catch(console.log)
-            // .then(value => console.log(value))
-            // console.log(status)
-            // if (status) {assetArray = [];
-            //     let pr = new Promise( (resolve, reject) => {
-                    
-                // })
-        
-               
-        
-                //     pr.then((value=>{
-                //         if (flag && value) {
-                //             deleteAll();
-                //         }
-                //     }))
-                {Alert.alert('Download Success', `Images saved to download folder`, 
-                            [{text:'OK', onPress:() => {
-                                assetArray=[];
-                                }}])}
-            )
-            }
-            catch(error){
-                console.log(error)
-            }
-        }
+            
+        //     let stati = assetArray.map((asset) => {
+        //         MediaLibrary.createAssetAsync([asset],albumObj,false).then(value=>{
+        //             return value
+        //         })
+        //     })
+            
+        //      await
+        //      Promise.all(
+        //         stati
+        //      ).then(()=>
+           
+        //         {Alert.alert('Download Success', `Images saved to download folder`, 
+        //                     [{text:'OK', onPress:() => {
+        //                         assetArray=[];
+        //                         }}])}
+        //     )
+        //     }
+        //     catch(error){
+        //         console.log(error)
+        //     }
+        // }
         catch(error){
             console.log(error)
         }
         finally{
+            Alert.alert('Download Success', `Images saved to download folder`);
             if (flag) {
                 deleteAll()
             }
