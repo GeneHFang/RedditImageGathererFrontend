@@ -78,7 +78,7 @@ const ImageContainer = (props) => {
         fetch(url, options)
         .then(res=>res.json())
         .then(json=>{
-            console.log(json);
+            // console.log(json);
             if (json.data) {
                 Alert.alert('Success', `Image added to your Favorites`, [{text:'OK', onPress:() => setMenu(false)}])
             }
@@ -99,7 +99,7 @@ const ImageContainer = (props) => {
         // console.log("rerendeing",props)
         // setArr([]);
         setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
-        console.log(url);
+        // console.log(url);
         
 
     }, [props]);
@@ -114,7 +114,7 @@ const ImageContainer = (props) => {
         .then(json=> {
             setRefresh(true)
             setArr(json.data.children.filter(child=> {
-                return child.data['post_hint']==='image'
+                return child.data['post_hint']==='image'||child.data['post_hint']==='rich:video'
             }))
         })
     }
@@ -128,7 +128,7 @@ const ImageContainer = (props) => {
         .then(json=> {
             setArr(json.data.children.filter(child=> {
                 // console.log(child.data.thumbnail)
-                return child.data['post_hint']==='image'
+                return child.data['post_hint']==='image' || child.data['post_hint']==='rich:video'
             }));
         })
     }, [url]);
@@ -154,7 +154,16 @@ const ImageContainer = (props) => {
         <View style={{flex:1, flexDirection: 'row', flexWrap:'wrap', padding: '5%'}}>
             {arr.map((child,ind) => {
                 let thumbURL = ""
-                if(child.data['post_hint'] === 'image') {
+                {/* console.log(child.data['post_hint']) */}
+                if(child.data['post_hint'] === 'image' || child.data['post_hint'] === 'rich:video') {
+                    {/* console.log(child.data.thumbnail) */}
+                    let urlFull = ""
+                    if (child.data.preview.images[0].variants.gif){
+                        urlFull = child.data.preview.images[0].variants.gif.source.url;
+                    }
+                    else {
+                        urlFull = child.data.preview.images[0].source.url;
+                    }
                     if (props.nsfw) {
                         if (child.data.thumbnail === 'nsfw')
                         {
@@ -177,7 +186,7 @@ const ImageContainer = (props) => {
                     index={ind} 
                     nsfw={props.nsfw ? false : child.data.thumbnail === 'nsfw'}
                     url={thumbURL} 
-                    fullImg={child.data.preview.images[0].source.url}
+                    fullImg={urlFull}
                     dimensions={100}
                     toggle={toggleChange}
                     />)
@@ -191,7 +200,13 @@ const ImageContainer = (props) => {
         // console.log('gothereeeee')
         // console.log(arr)
         let child = arr[indPos];
-        let url = child.data.preview.images[0].source.url;
+        let url =''
+        if (child.data.preview.images[0].variants.gif){
+            url = child.data.preview.images[0].variants.gif.source.url
+        }
+        else{
+           url = child.data.preview.images[0].source.url;
+        }
         let fullURL = `https://m.reddit.com${child.data.permalink}`
         let type = url.split('?')[0].split('.');
         type = type[type.length-1];

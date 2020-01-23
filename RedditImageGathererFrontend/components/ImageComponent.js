@@ -32,7 +32,7 @@ const ImageComponent = (props) => {
             >
             <ThemeProvider theme={{colors:{primary:'#FFF'}}}>
                 <TouchableOpacity onLongPress={() => props.showMenu(true)}>
-                <View style={{width:'25%', flex:1, alignSelf:'stretch'}}  style={{height:500}}>
+                <View style={{width:'25%', flex:1, alignSelf:'stretch'}}  style={{paddingTop:50}}>
                 {/* <Text>Hello!</Text> */}
                     <Image resizeMode='contain' style={{width: props.dimensions, height: props.dimensions }} source={{uri:props.url}} /> 
                 

@@ -49,17 +49,21 @@ const FavoriteMenuComponent = (props) => {
         // console.log(props.url)
         let resp = await al();
         MediaLibrary.requestPermissionsAsync();
+        // console.log(FileSystem.documentDirectory)
+        // let str = 
+        // str = str.slice(0,str.length-1);
         const downloadResumable = FileSystem.createDownloadResumable(
             `${props.url}`,
-            FileSystem.documentDirectory + '.'+ props.fileType, {})
+            FileSystem.documentDirectory + 'image.'+ props.fileType, {})
 
         try {
             const { uri } = await downloadResumable.downloadAsync();
             const asset = await MediaLibrary.createAssetAsync(uri);
+            console.log(asset)
             const album = await MediaLibrary.getAlbumsAsync();
             let albumObj = await hasDownloadFolder(album);
             let finish;
-            // console.log(uri)
+            console.log(uri)
             if (albumObj){
                 let albumID = albumObj.id+"";
                 MediaLibrary.addAssetsToAlbumAsync([asset],albumID,false).then(

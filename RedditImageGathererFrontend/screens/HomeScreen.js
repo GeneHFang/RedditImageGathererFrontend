@@ -2,6 +2,7 @@ import * as WebBrowser from 'expo-web-browser';
 import React, {useState, useEffect, Fragment} from 'react';
 import {
   Image,
+  Dimensions,
   Platform,
   AsyncStorage,
   ScrollView,
@@ -158,6 +159,7 @@ const HomeScreen = ( props )=> {
   }
 
   let MenuComponent = (
+    <Fragment>
     <View style={styles.getStartedContainer}>
       <Text>NSFW Toggle</Text>
           {/* <DevelopmentModeNotice /> */}
@@ -169,6 +171,7 @@ const HomeScreen = ( props )=> {
           <Button style={{padding:5}} title="Sign Out" onPress={signout} />
           </ThemeProvider>
         </View>
+        </Fragment>
   )
   
   return (
@@ -181,11 +184,15 @@ const HomeScreen = ( props )=> {
     <SideMenu
       isOpen={isOpen}
       menu={MenuComponent}
+      disableGestures={true}
+      onChange={()=>setOpen(!isOpen)}
+      bouncBackOnOverDraw={false}
+      openMenuOffset={0.4*Math.round(Dimensions.get('window').width)}
       >
     <View style={styles.container}>
 
     <Header
-        leftComponent={{icon:'menu', onPress:()=>{setOpen(!isOpen)}}}
+        leftComponent={{icon:'menu', onPress:()=>{if (!isOpen) {setOpen(true)}}}}
         centerComponent={
           {text:`Currently browsing: r/${props.subreddit}`, style:{color:'#fff'}}}
     />
@@ -340,7 +347,7 @@ const styles = StyleSheet.create({
   getStartedContainer: {
     alignItems: 'center',
     marginTop: 60,
-    marginHorizontal: 50,
+    marginHorizontal: 20,
     paddingBottom:30
   },
   homeScreenFilename: {
