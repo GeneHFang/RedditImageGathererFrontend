@@ -98,7 +98,12 @@ const ImageContainer = (props) => {
     useEffect( () => {
         // console.log("rerendeing",props)
         // setArr([]);
-        setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
+        if (props.top){
+            setURL(`https://www.reddit.com/r/${props.subreddit}/top.json?limit=100&t=${props.range}`)
+        }
+        else{
+            setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=100`)
+        }
         // console.log(url);
         
 
@@ -171,7 +176,7 @@ const ImageContainer = (props) => {
                             let type = url.split('?')[0].split('.');
                             type = type[type.length-1];
                             let parsedURL = url.replace(/amp;/g,'');
-                            console.log(parsedURL)
+                            {/* console.log(parsedURL) */}
                             thumbURL = parsedURL;
                         }
                         else {

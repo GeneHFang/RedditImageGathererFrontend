@@ -57,6 +57,8 @@ const HomeScreen = ( props )=> {
   const [refreshing, setRefresh] = useState(false);
   const [isOpen, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
+  const [top, setTop] = useState(false);
+  const [range, setRange] = useState('all')
 
   useEffect(() => {
     console.log('thisID',props.id)
@@ -70,6 +72,31 @@ const HomeScreen = ( props )=> {
 
 
   }, [])
+
+  useEffect(()=>{
+
+    let userData;
+    let data =['all', 'animemes', 'azurelane', 'cats', 'memes', 'funny'];
+    let url;
+    if (props.id===-1){url= `http://7f24f26f.ngrok.io/api/v1/users/${id}`}
+    else{
+        url=`http://7f24f26f.ngrok.io/api/v1/users/${props.id}`
+    }
+      fetch(url)
+                  .then(res => res.json())
+                  .then(json=> {
+                    // console.log(json)
+                    userData = json.data.attributes.subreddits.map(subreddit=> {
+                      return (subreddit.name.toLowerCase())
+                    })
+                    let allData = [...userData, ...data].filter((val,index,self)=> {
+                        return self.indexOf(val) === index;
+                    })
+                    setredditList(allData)
+
+                  }).catch((e)=>{})
+
+  },[top])
 
   useEffect(()=> {
     props.assignUser(id);
@@ -184,7 +211,30 @@ const HomeScreen = ( props )=> {
             <Switch value={props.nsfw} onChange={props.toggleNSFW}/>
             
       <Text style={dark ? {color:'white'} : {color:'black'}}>Dark Mode</Text>
-            <Switch value={dark} onChange={()=>setDark(!dark)}/>  
+            <Switch value={dark} onChange={()=>setDark(!dark)}/>
+
+      <Text style={dark ? {color:'white'} : {color:'black'}}>Sort by</Text>
+      <Text style={dark ? {color:'white'} : {color:'black'}}>Hot.....Top</Text>
+            <Switch value={top} onChange={()=>setTop(!top)}/>
+            {top ? 
+              <View >
+      <Picker
+            style={{height:40,width:150, color:(dark ? 'white':'black')}}
+            selectedValue={range}
+            onValueChange={ itemValue =>{
+            setRange(itemValue)
+            // console.log(props.subreddit)
+            }
+          }
+          >
+          <Picker.Item label="All Time" value="all" />
+          <Picker.Item label="Past Hour" value="hour" />
+          <Picker.Item label="Past Day" value="day" />
+          <Picker.Item label="Past Week" value="week" />
+          <Picker.Item label="Past Month" value="month" />
+          <Picker.Item label="Past Year" value="year" />
+      </Picker></View> : null
+            }
           <Button style={{padding:5}} title="My Favorites" onPress={showFavImages} />
           <ThemeProvider theme={{colors:{primary:'#FF4040'}}}>
           <Button style={{padding:5}} title="Sign Out" onPress={signout} />
@@ -211,92 +261,94 @@ const HomeScreen = ( props )=> {
       >
     <View style={container}>
 
-    <Header
-        leftComponent={{icon:'menu', onPress:()=>{if (!isOpen) {setOpen(true)}}}}
-        centerComponent={
-          {text:`Currently browsing: r/${props.subreddit}`, style:{color:'#fff'}}}
-    />
-      <View style={{ flex: 1,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    top:90,
-    zIndex: 1}}>
-      <Autocomplete 
-      style={{alignSelf:'center', color:(dark? 'white':'black')}}
-      data={
-        getData()
+<Header
+    leftComponent={{icon:'menu', onPress:()=>{if (!isOpen) {setOpen(true)}}}}
+    centerComponent={
+      {text:`Currently browsing: r/${props.subreddit}`, style:{color:'#fff'}}}
+/>
+  <View style={{ flex: 1,
+left: 0,
+position: 'absolute',
+right: 0,
+top:90,
+zIndex: 1}}>
+  <Autocomplete 
+  style={{alignSelf:'center', color:(dark? 'white':'black')}}
+  data={
+    getData()
+  }
+  autoCapitalize="none"
+  placeholder="Enter Subreddit Name"
+  defaultValue={query}
+  renderItem={({item,index})=>(
+    <TouchableOpacity 
+      style={{flex:1, resizeMode:'cover', backgroundColor:(dark ? '#353C51': 'white')}}
+      onPress={()=>{
+        props.navSubreddit(item);
+        setQuery("");
+        Keyboard.dismiss();
+      }}>
+      <Text style={{ alignSelf:'center', color:(dark? 'white':'black')}}>{item}</Text>
+    </TouchableOpacity>
+  )}
+  keyExtractor={(item,index)=>item+""+index}
+  onChangeText={(text)=>setQuery(text)}
+  // hideResults
+  /></View>
+
+  {/* <View style={{padding:5, marginTop:40}}>
+  <Picker
+        selectedValue={props.subreddit}
+        onValueChange={ itemValue =>{
+        props.navSubreddit(itemValue)
+        // console.log(props.subreddit)
+        }
       }
-      autoCapitalize="none"
-      placeholder="Enter Subreddit Name"
-      defaultValue={query}
-      renderItem={({item,index})=>(
-        <TouchableOpacity 
-          style={{flex:1, resizeMode:'cover', backgroundColor:(dark ? '#353C51': 'white')}}
-          onPress={()=>{
-            props.navSubreddit(item);
-            setQuery("");
-            Keyboard.dismiss();
-          }}>
-          <Text style={{ alignSelf:'center', color:(dark? 'white':'black')}}>{item}</Text>
-        </TouchableOpacity>
-      )}
-      keyExtractor={(item,index)=>item+""+index}
-      onChangeText={(text)=>setQuery(text)}
-      // hideResults
-      /></View>
+        style={{paddingTop:40}}
+      >
+      <Picker.Item label="All" value="all" />
+      <Picker.Item label="Animemes" value="animemes" />
+      <Picker.Item label="Memes" value="memes" />
+      <Picker.Item label="Cats" value="cats" />
+  </Picker></View> */}
+  
+  
+  
 
-      {/* <View style={{padding:5, marginTop:40}}>
-      <Picker
-            selectedValue={props.subreddit}
-            onValueChange={ itemValue =>{
-            props.navSubreddit(itemValue)
-            // console.log(props.subreddit)
-            }
-          }
-            style={{paddingTop:40}}
-          >
-          <Picker.Item label="All" value="all" />
-          <Picker.Item label="Animemes" value="animemes" />
-          <Picker.Item label="Memes" value="memes" />
-          <Picker.Item label="Cats" value="cats" />
-      </Picker></View> */}
-      
-      
-      
-
-      {/* <ScrollView */}
-      {/* <View
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        // scrollEnabled={scrollable}
-         > */}
-        {/* <View style={styles.welcomeContainer}>
-          <Image
-            source={
-              __DEV__
-                ? require('../assets/images/robot-dev.png')
-                : require('../assets/images/robot-prod.png')
-            }
-            style={styles.welcomeImage}
-          />
-        </View> */}
-        
-
-        <View style={styles.helpContainer}>
-          <ImageContainer 
-            subreddit={props.subreddit}
-            toggleScroll={toggleScroll}
-            userID={props.id}
-            dark={dark}  
-            />
-        </View>
-        {/* </View> */}
-      {/* </ScrollView> */}
-
-      
-    </View>
+  {/* <ScrollView */}
+  {/* <View
+    style={styles.container}
+    contentContainerStyle={styles.contentContainer}
+    // scrollEnabled={scrollable}
+     > */}
+    {/* <View style={styles.welcomeContainer}>
+      <Image
+        source={
+          __DEV__
+            ? require('../assets/images/robot-dev.png')
+            : require('../assets/images/robot-prod.png')
+        }
+        style={styles.welcomeImage}
+      />
+    </View> */}
     
+
+    <View style={styles.helpContainer}>
+      <ImageContainer 
+        subreddit={props.subreddit}
+        toggleScroll={toggleScroll}
+        userID={props.id}
+        dark={dark}
+        top={top}
+        range={range}  
+        />
+    </View>
+    {/* </View> */}
+  {/* </ScrollView> */}
+
+  
+</View>
+
     </SideMenu>
   );
 }

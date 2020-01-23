@@ -68,13 +68,21 @@ const msp = (state) => {
 
     submitHandler = (values) => { 
         let url = 'http://7f24f26f.ngrok.io/sessions';
+
+        console.log('test');
         let options = this.postOptions(values.username, values.password);
 
+        console.log('testafter', values);
         fetch(url, options)
         .then(resp=>resp.json())
         .then(json=>{
+            console.log(json)
+            if (json.status===401) {
+                Alert.alert("Wrong Password or Username", "Please doublecheck your login info")
+            }else{
             this.props.assignUser(json.user.id)
             this._signInAsync();
+            }
         })
         .catch(error => Alert.alert("Error logging in", error, [{title:'ok'}]))
 
