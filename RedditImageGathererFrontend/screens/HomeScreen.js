@@ -76,7 +76,7 @@ const HomeScreen = ( props )=> {
   useEffect(()=>{
 
     let userData;
-    let data =['all', 'animemes', 'azurelane', 'cats', 'memes', 'funny'];
+    let data =['all', 'animemes', 'azurelane', 'cats', 'memes', 'funny', 'gaming', 'pics', 'aww', 'movies'];
     let url;
     if (props.id===-1){url= `http://7f24f26f.ngrok.io/api/v1/users/${id}`}
     else{

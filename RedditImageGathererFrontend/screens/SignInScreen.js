@@ -35,7 +35,7 @@ const msp = (state) => {
 
     }
     static navigationOptions = {
-      title: 'Please Sign In',
+      title: 'Welcome to Grabbit! Please Sign In',
       headerTitleStyle:{
           fontWeight:'bold'
       }
