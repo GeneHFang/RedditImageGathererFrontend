@@ -1,7 +1,8 @@
 const defaultState = {
     id: -1,
     subreddit: 'all',
-    nsfw: false
+    nsfw: false,
+    page: 0,
 }
 
 let userReducer = (prevState = defaultState, action) => {
@@ -15,6 +16,11 @@ let userReducer = (prevState = defaultState, action) => {
             return {...prevState, subreddit: action.payload};
         case "NSFW":
             return {...prevState, nsfw: !prevState.nsfw};
+        case "NEXT_PAGE":
+            return {...prevState, page: prevState.page+1};
+        case "PREV_PAGE":
+            if (prevState.page === 0) {return { ...prevState}; }
+            else {return { ...prevState, page: prevState.page-1}; }
         default:
             return prevState;
     }

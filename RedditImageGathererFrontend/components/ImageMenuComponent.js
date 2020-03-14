@@ -36,7 +36,7 @@ const ImageMenuComponent = (props) => {
     }
 
     let save  = async () => {
-        console.log(props.url)
+        //console.log(props.url)
         MediaLibrary.requestPermissionsAsync();
         const downloadResumable = FileSystem.createDownloadResumable(
             `${props.url}`,

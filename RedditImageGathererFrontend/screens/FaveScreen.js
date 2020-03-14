@@ -40,7 +40,7 @@ const FaveScreen = (props) => {
 
     useEffect(
         ()=> {
-            setURL(`http://7f24f26f.ngrok.io/api/v1/users/${props.id}`);
+            setURL(`http://83bc535c.ngrok.io/api/v1/users/${props.id}`);
         },
         [props]
     )
@@ -67,7 +67,7 @@ const FaveScreen = (props) => {
                 headers: {
                     'Content-Type': 'application/json',
                     Accept: 'application/json',
-                    'Access-Control-Allow-Origin':'http://7f24f26f.ngrok.io'
+                    'Access-Control-Allow-Origin':'http://83bc535c.ngrok.io'
                 }
                 }
 
@@ -76,7 +76,7 @@ const FaveScreen = (props) => {
             })
 
             arrindex.forEach( (id,index) => {
-            let url = `http://7f24f26f.ngrok.io/api/v1/images/${id}`;
+            let url = `http://83bc535c.ngrok.io/api/v1/images/${id}`;
     
             fetch(url, options)
             .then(res=>res.json())

@@ -18,7 +18,7 @@ import {
 } from 'react-native';
 import { Button, ThemeProvider, Header } from 'react-native-elements';
 import { incrementTest } from '../redux/actions/TestAction';
-import { logoutUser, assignUser, navSubreddit, toggleNSFW } from '../redux/actions/CurrentLoggedInUser';
+import { logoutUser, assignUser, navSubreddit, toggleNSFW, nextPage, prevPage } from '../redux/actions/CurrentLoggedInUser';
 import {connect} from 'react-redux';
 import ImageContainer from '../containers/ImageContainer';
 import Autocomplete from 'react-native-autocomplete-input';
@@ -30,7 +30,9 @@ const mapDispatchToProps = {
   logoutUser,
   assignUser,
   navSubreddit,
-  toggleNSFW
+  toggleNSFW,
+  nextPage,
+  prevPage,
 }
 const mapStateToProps = (state) => {
   // console.log("State: ",state)
@@ -38,7 +40,8 @@ const mapStateToProps = (state) => {
     increment: state.first.increment,
     id: state.second.id,
     subreddit: state.second.subreddit,
-    nsfw: state.second.nsfw
+    nsfw: state.second.nsfw,
+    page: state.second.page,
   })
 }
 
@@ -78,9 +81,9 @@ const HomeScreen = ( props )=> {
     let userData;
     let data =['all', 'animemes', 'azurelane', 'cats', 'memes', 'funny', 'gaming', 'pics', 'aww', 'movies'];
     let url;
-    if (props.id===-1){url= `http://7f24f26f.ngrok.io/api/v1/users/${id}`}
+    if (props.id===-1){url= `http://83bc535c.ngrok.io/api/v1/users/${id}`}
     else{
-        url=`http://7f24f26f.ngrok.io/api/v1/users/${props.id}`
+        url=`http://83bc535c.ngrok.io/api/v1/users/${props.id}`
     }
       fetch(url)
                   .then(res => res.json())
@@ -103,9 +106,9 @@ const HomeScreen = ( props )=> {
     let userData;
     let data =['all', 'animemes', 'azurelane', 'cats', 'memes', 'funny'];
     let url;
-    if (props.id===-1){url= `http://7f24f26f.ngrok.io/api/v1/users/${id}`}
+    if (props.id===-1){url= `http://83bc535c.ngrok.io/api/v1/users/${id}`}
     else{
-        url=`http://7f24f26f.ngrok.io/api/v1/users/${props.id}`
+        url=`http://83bc535c.ngrok.io/api/v1/users/${props.id}`
     }
       fetch(url)
                   .then(res => res.json())
@@ -132,13 +135,13 @@ const HomeScreen = ( props )=> {
   }, [query])
 
   let signout = () => {
-      let url = 'http://7f24f26f.ngrok.io/logout';
+      let url = 'http://83bc535c.ngrok.io/logout';
       let options = {
         method: "DELETE",
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
-            'Access-Control-Allow-Origin':'http://7f24f26f.ngrok.io'
+            'Access-Control-Allow-Origin':'http://83bc535c.ngrok.io'
         }
       };
 
@@ -236,6 +239,9 @@ const HomeScreen = ( props )=> {
       </Picker></View> : null
             }
           <Button style={{padding:5}} title="My Favorites" onPress={showFavImages} />
+          <Text style={dark ? {color:'white'} : {color:'black'}}>{props.page}</Text>
+          <Button style={{padding:5}} title="Next Page" onPress={props.nextPage} />
+          <Button style={{padding:5}} title="Prev Page" onPress={props.prevPage} />
           <ThemeProvider theme={{colors:{primary:'#FF4040'}}}>
           <Button style={{padding:5}} title="Sign Out" onPress={signout} />
           </ThemeProvider>

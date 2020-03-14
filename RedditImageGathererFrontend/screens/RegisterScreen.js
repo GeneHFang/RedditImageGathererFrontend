@@ -25,7 +25,7 @@ const RegisterScreen = (props) => {
         }
         else {
             
-            let url = 'http://7f24f26f.ngrok.io/api/v1/users';
+            let url = 'http://83bc535c.ngrok.io/api/v1/users';
             let options = postOptions(values.username, values.password, values['password_confirm']);
 
             fetch(url, options)

@@ -34,23 +34,23 @@ const FavoritesContainer = (props) => {
         showMenu(false);
         toggleFull(false);
         // if (props.images[currentIndex]){toggleView()};
-        console.log("test means this also happened: ")
+        //console.log("test means this also happened: ")
     }, [props.images])
 
     useEffect(() => {
         // setArr(props.images);
-        console.log("this happened!",props.images);
+        //console.log("this happened!",props.images);
     }, [])
 
     let deleteImage = (id) => {
         // console.log("testingProps: ",props.userID);
-        let url = `http://7f24f26f.ngrok.io/api/v1/images/${id}`;
+        let url = `http://83bc535c.ngrok.io/api/v1/images/${id}`;
         let options = {
             method: "DELETE",
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Access-Control-Allow-Origin':'http://7f24f26f.ngrok.io'
+                'Access-Control-Allow-Origin':'http://83bc535c.ngrok.io'
             }
             }
 

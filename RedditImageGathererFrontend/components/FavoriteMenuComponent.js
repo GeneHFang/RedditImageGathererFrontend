@@ -59,11 +59,11 @@ const FavoriteMenuComponent = (props) => {
         try {
             const { uri } = await downloadResumable.downloadAsync();
             const asset = await MediaLibrary.createAssetAsync(uri);
-            console.log(asset)
+            //console.log(asset)
             const album = await MediaLibrary.getAlbumsAsync();
             let albumObj = await hasDownloadFolder(album);
             let finish;
-            console.log(uri)
+            //console.log(uri)
             if (albumObj){
                 let albumID = albumObj.id+"";
                 MediaLibrary.addAssetsToAlbumAsync([asset],albumID,false).then(

@@ -9,13 +9,30 @@ import {connect} from 'react-redux';
 const mapStateToProps = (state) => {
     // console.log("State: ",state)
     return ({
-      nsfw: state.second.nsfw
+      nsfw: state.second.nsfw,
+      page: state.second.page,
     })
   }
 
 const ImageContainer = (props) => {
+
+    //still need logic for after page 2
+    const getURL = () => {
+        if (props.page === 0){
+            setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
+        }
+        else{
+            fetch(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
+                .then(res => res.json())
+                .then(json => {
+                    setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50&after=${json.data.children[json.data.dist-1].data.name}`)
+                })
+        }
+    }
+
     //2 is placeholder
-    const [url, setURL] = useState(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
+    const [url, setURL] = useState("");
+
     
     const [refreshing, setRefresh] = useState(false);
     const [arr, setArr] = useState([]);
@@ -27,6 +44,10 @@ const ImageContainer = (props) => {
     const [indPos, setInd] = useState(-1);
 
     const [menu, setMenu] = useState(false);
+
+    useEffect(()=>{
+        getURL();
+    },[props.page]);
 
     let toggleChange = (url, toggleTrue, index) => {
         // console.log(e)
@@ -55,14 +76,14 @@ const ImageContainer = (props) => {
         setInd(indPos + direction);
     }
     let saveImageURL = (imgURL, fileType, subreddit, nsfw, upvotes, webURL) => {
-        // console.log("testingProps: ",props.userID);
-        let url = 'http://7f24f26f.ngrok.io/api/v1/images';
+        // console.log("testing all: ",imgURL, );
+        let url = 'http://83bc535c.ngrok.io/api/v1/images';
         let options = {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                'Access-Control-Allow-Origin':'http://7f24f26f.ngrok.io'
+                'Access-Control-Allow-Origin':'http://83bc535c.ngrok.io'
             },
             body: JSON.stringify({"image":{
                 url: imgURL,
