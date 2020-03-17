@@ -6,11 +6,20 @@ import ImageComponent from '../components/ImageComponent';
 import ImageMenuComponent from '../components/ImageMenuComponent';
 import {connect} from 'react-redux';
 
+import {
+    saveLastPage
+} from '../redux/actions/CurrentLoggedInUser';
+
+const mapDispatchToProps = {
+    saveLastPage,
+}
+
 const mapStateToProps = (state) => {
     // console.log("State: ",state)
     return ({
       nsfw: state.second.nsfw,
       page: state.second.page,
+      lastPage: state.second.fiftiethPage,
     })
   }
 
@@ -19,16 +28,24 @@ const ImageContainer = (props) => {
     //still need logic for after page 2
     const getURL = () => {
         if (props.page === 0){
+            props.saveLastPage("");
             setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
         }
         else{
             fetch(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
                 .then(res => res.json())
                 .then(json => {
-                    setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50&after=${json.data.children[json.data.dist-1].data.name}`)
+                    props.saveLastPage(json.data.children[json.data.dist-1].data.name);
                 })
         }
     }
+
+    useEffect( () => {
+        if (props.fiftiethPage !== ""){
+            setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50&after=${props.fiftiethPage}`)
+        }
+        
+    }, [props.fiftiethPage])
 
     //2 is placeholder
     const [url, setURL] = useState("");
@@ -277,4 +294,4 @@ const ImageContainer = (props) => {
     );
 }
 
-export default connect(mapStateToProps)(ImageContainer); 
+export default connect(mapStateToProps, mapDispatchToProps)(ImageContainer); 

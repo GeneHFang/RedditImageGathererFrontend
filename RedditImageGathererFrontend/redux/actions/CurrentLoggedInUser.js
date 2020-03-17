@@ -22,3 +22,7 @@ export const nextPage = () => {
 export const prevPage = () => {
     return {type: "PREV_PAGE"};
 }
+
+export const saveLastPage = (pageName) => {
+    return {type: "SAVE_LAST_PAGE", payload: pageName}
+}

@@ -3,6 +3,7 @@ const defaultState = {
     subreddit: 'all',
     nsfw: false,
     page: 0,
+    fiftiethPage: "",
 }
 
 let userReducer = (prevState = defaultState, action) => {
@@ -21,6 +22,8 @@ let userReducer = (prevState = defaultState, action) => {
         case "PREV_PAGE":
             if (prevState.page === 0) {return { ...prevState}; }
             else {return { ...prevState, page: prevState.page-1}; }
+        case "SAVE_LAST_PAGE":
+            return {...prevState, fiftiethPage: action.payload};
         default:
             return prevState;
     }
