@@ -32,7 +32,7 @@ const ImageContainer = (props) => {
             setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
         }
         else{
-            fetch(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50`)
+            fetch(url)
                 .then(res => res.json())
                 .then(json => {
                     props.saveLastPage(json.data.children[json.data.dist-1].data.name);
@@ -41,11 +41,12 @@ const ImageContainer = (props) => {
     }
 
     useEffect( () => {
-        if (props.fiftiethPage !== ""){
-            setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50&after=${props.fiftiethPage}`)
+        console.log("happened");
+        if (props.lastPage !== ""){
+            setURL(`https://www.reddit.com/r/${props.subreddit}/hot.json?limit=50&after=${props.lastPage}`)
         }
         
-    }, [props.fiftiethPage])
+    }, [props.lastPage])
 
     //2 is placeholder
     const [url, setURL] = useState("");
@@ -134,7 +135,7 @@ const ImageContainer = (props) => {
     };
 
     useEffect( () => {
-        // console.log("rerendeing",props)
+        console.log("rerendeing")
         // setArr([]);
         if (props.top){
             setURL(`https://www.reddit.com/r/${props.subreddit}/top.json?limit=100&t=${props.range}`)
@@ -145,7 +146,7 @@ const ImageContainer = (props) => {
         // console.log(url);
         
 
-    }, [props]);
+    }, [props.top]);
     useEffect(()=>{
         setRefresh(false);
     },[arr])
